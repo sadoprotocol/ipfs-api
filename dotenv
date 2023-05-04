@@ -1,0 +1,15 @@
+# General
+APP_NETWORK_REQUEST_LIMIT=1000000
+
+# IPFS
+IPFS_GATEWAY="http://ipfs-gateway.ordit.io"
+IPFS_API="http://localhost:5001"
+IPFS_IPFS_LIFETIME="48h"
+
+# MONGO
+MONGO_DATABASE='cake'
+MONGO_USERNAME=''
+MONGO_PASSWORD=''
+MONGO_HOSTNAME='localhost'
+MONGO_PORT=''
+

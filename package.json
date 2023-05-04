@@ -1,0 +1,22 @@
+{
+  "name": "cake-ipfs-api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "crypto-js": "^4.0.0",
+    "dotenv": "^16.0.3",
+    "express": "~4.16.1",
+    "express-useragent": "^1.0.15",
+    "helmet": "^4.4.1",
+    "http-errors": "~1.6.3",
+    "ipfs-core": "^0.18.0",
+    "ipfs-http-client": "^54.0.1",
+    "moment": "^2.29.4",
+    "mongodb": "^3.6.6",
+    "morgan": "~1.9.1"
+  }
+}
