@@ -13,25 +13,31 @@
 
 ### Configuration
 
-Copy `dotenv` to `.env`.
+Copy `dotenv` to `.env`.\
 Edit `.env` and set proper parameters.
 
 <br />
 
 Install packages:
-`$ npm install`
+
+```javascript
+$ npm install
+```
 
 <br />
 
 Start:
-`$ npm start`
+
+```javascript
+$ npm start
+```
 
 <br />
 <br />
 
 ## Usage
 
-Examples of html form and upload javascript procedure are available in `/examples`
+Examples of html form and upload javascript procedure are available in [examples](https://github.com/cakespecial/ipfs-api/tree/main/examples).
 
 <br />
 <br />
