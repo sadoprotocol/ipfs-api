@@ -39,15 +39,14 @@ $ npm start
 
 Examples of html form and upload javascript procedure are available in [examples](https://github.com/cakespecial/ipfs-api/tree/main/examples).
 
+> Note: Use the `pin` flag for persistent. Otherwise the media will get removed by garbage collector.
+
 <br />
 <br />
 
 ## Pending items
 
-- Limit media size check, `1 MB`
-- Confirm and limit media types
 - If IPNS is used, create key backup procedures
-- List uploaded?
-- SystemD or some kind of daemon management
+- List uploaded?, will require authentication or some sort.
 - Git workflow deploy server
 
