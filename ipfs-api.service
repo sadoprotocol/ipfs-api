@@ -1,0 +1,15 @@
+[Unit]
+Description=IPFS API Service
+After=network.target
+
+[Service]
+User=ipfs
+WorkingDirectory=/home/ipfs/ipfs-api
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=500ms
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
+
