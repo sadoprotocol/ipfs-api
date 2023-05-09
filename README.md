@@ -7,7 +7,9 @@
 
 ### Requirement
 
+- IPFS server (access to port `5001`)
 - MongoDB
+- NodeJS
 
 <br />
 
@@ -47,6 +49,6 @@ Examples of html form and upload javascript procedure are available in [examples
 ## Pending items
 
 - If IPNS is used, create key backup procedures
-- List uploaded?, will require authentication or some sort.
-- Git workflow deploy server
+- API Authentication
+- List uploaded? (Require authentication)
 
