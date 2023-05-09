@@ -7,6 +7,8 @@ const router = express.Router();
 const ipfsModel = require('../models/ipfs');
 const ipfs = require('../modules/ipfs');
 
+const myGateway = process.env.IPFS_GATEWAY;
+
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 const acceptedMedia = [
   'application/pdf',
@@ -65,7 +67,8 @@ router.post("/upload", function(req, res, next) {
               message: 'OK',
               rdata: {
                 address: uploaded.path,
-                url: `https://ipfs.io/ipfs/${uploaded.path}`
+                "ipfs-gateway": `https://ipfs.io/ipfs/${uploaded.path}`,
+                "cake-gateway": `${myGateway}/ipfs/${uploaded.path}`
               }
             });
           }).catch(err => {

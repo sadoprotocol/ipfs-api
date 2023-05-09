@@ -1,7 +1,7 @@
 "use strict"
 
 const IPFS = {
-  endpoint: "http://localhost:3009",
+  endpoint: "http://ipfs-api.ordit.io",
 
   upload(form) {
     let _this = this;
