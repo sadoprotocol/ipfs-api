@@ -1,13 +1,18 @@
 "use strict";
 
+const fs = require('node:fs').promises;
+const path = require('node:path');
 const createError = require('http-errors');
 const express = require('express');
+const multer = require("multer");
 const router = express.Router();
 
 const ipfsModel = require('../models/ipfs');
 const ipfs = require('../modules/ipfs');
 
+const upload = multer({ dest: 'uploads/' });
 const myGateway = process.env.IPFS_GATEWAY;
+const maximumFilesize = 5 ** 8; // 50 MB
 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 const acceptedMedia = [
@@ -34,61 +39,50 @@ const acceptedMedia = [
   'video/webm'
 ];
 
-router.post("/upload", function(req, res, next) {
-  let maximumFilesize = 5 ** 8; // 50 MB
+router.post("/upload", upload.single("file"), async function (req, res, next) {
+  const file = req.file;
 
-  // Check data received
-  if (
-    req.body.name !== undefined 
-    && req.body.size !== undefined
-    && req.body.type !== undefined
-    && req.body.file !== undefined
-  ) {
-    // Check media type
-    if (acceptedMedia.includes(req.body.type)) {
-      // Check size
-      if (req.body.size <= maximumFilesize) {
-        try {
-          // Convert the base64 to buffer and save the media temporarily
-          let baseImage = req.body.file;
-          let ext = baseImage.substring(baseImage.indexOf("/") + 1, baseImage.indexOf(";base64"));
-          let fileType = baseImage.substring("data:".length,baseImage.indexOf("/"));
+  // ### File Validation
 
-          //Forming regex to extract base64 data of file.
-          let regex = new RegExp(`^data:${fileType}\/${ext};base64,`, 'gi');
+  if (file === undefined) {
+    return next(createError(406, 'Missing file.'));
+  }
 
-          // Extract base64 data.
-          let base64_data = baseImage.replace(regex, "");
-          let bitmap = Buffer.from(base64_data, 'base64');
+  if (acceptedMedia.includes(file.mimetype) === false) {
+    return next(createError(406, 'Invalid media type, ' + file.mimetype));
+  }
 
-          handleIpfs(bitmap, req.body).then(uploaded => {
-            res.json({
-              success: true,
-              message: 'OK',
-              rdata: {
-                address: uploaded.path,
-                "ipfs-gateway": `https://ipfs.io/ipfs/${uploaded.path}`,
-                "cake-gateway": `${myGateway}/ipfs/${uploaded.path}`
-              }
-            });
-          }).catch(err => {
-            next(createError(500, err.message));
-          });
-        } catch (err) {
-          next(createError(500, err.message));
-        }
-      } else {
-        next(createError(406, 'Filesize exceed limit: ' + (maximumFilesize / 10 ** 6) + 'MB'));
+  if (file.size > maximumFilesize) {
+    return next(createError(400, 'File size exceeded limit: ' + (maximumFilesize / 10 ** 6) + 'MB'));
+  }
+
+  // ### Read file and upload to IPFS
+
+  const tmpFilePath = path.join(__dirname, '..', file.path);
+  try {
+    const contents = await fs.readFile(tmpFilePath, { encoding: 'base64' });
+    const uploaded = await handleIpfs(contents, {
+      name: req.body.name ? `${req.body.name}.${file.originalname.split(".").pop()}` : file.originalname,
+      size: file.size,
+      type: file.mimetype,
+      pin: req.body.pin === true
+    });
+    res.json({
+      success: true,
+      message: 'OK',
+      rdata: {
+        address: uploaded.path,
+        "ipfs-gateway": `https://ipfs.io/ipfs/${uploaded.path}`,
+        "cake-gateway": `${myGateway}/ipfs/${uploaded.path}`
       }
-    } else {
-      next(createError(406, 'Invalid media type, ' + req.body.type));
-    }
-  } else {
-    next(createError(406, 'Insufficient parameter received.'));
+    });
+  } catch (err) {
+    console.log(err);
+    next(createError(500, err.message));
+  } finally {
+    fs.unlink(tmpFilePath); // remove temporary upload regardless of success or failure
   }
 });
-
-// ==
 
 async function handleIpfs(bitmap, options) {
   let uploaded = await ipfs.create(bitmap);
@@ -109,7 +103,4 @@ async function handleIpfs(bitmap, options) {
   return uploaded;
 }
 
-
-
 module.exports = router;
-
