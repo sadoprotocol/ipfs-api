@@ -9,6 +9,7 @@ const ipfsConfig = {
 };
 
 exports.create = create;
+exports.get = get;
 exports.resolve = resolve;
 exports.publish = publish;
 exports.pin = pin;
@@ -31,6 +32,10 @@ async function create(content) {
   let data = await client.add(content, { pin: false });
   data.url = ipfsConfig.gateway + '/ipfs/' + data.path;
   return data;
+}
+
+async function get(addr) {
+  return getContent(ipfsConfig.gateway + '/ipfs/' + addr)
 }
 
 async function pin(addr) {
