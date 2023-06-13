@@ -1,6 +1,6 @@
 "use strict";
 
-const https = require('https');
+const http = require('http');
 const ipfs = require("ipfs-http-client");
 const ipfsConfig = {
   gateway: process.env.IPFS_GATEWAY,
@@ -138,7 +138,7 @@ function timeout(asyncMethod, seconds = 10, wait = false) {
 
 function getContent(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, (resp) => {
+    http.get(url, (resp) => {
       let data = '';
 
       // A chunk of data has been received.

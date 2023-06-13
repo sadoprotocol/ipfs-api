@@ -85,16 +85,22 @@ router.post("/upload", upload.single("file"), async function (req, res, next) {
 });
 
 router.get("/:cid", async function (req, res, next) {
-  const file = await ipfsModel.findOne({ path: req.params.cid });
-  if (file === undefined) {
-    return next(createError(404, 'File not found.'));
+  try {
+    const file = await ipfsModel.findOne({ path: req.params.cid });
+    if (file === false) {
+      return next(createError(404, 'File not found.'));
+    }
+    const content = await ipfs.get(file.path);
+    if (content === undefined) {
+      return next(createError(500, 'Unable to fetch file from IPFS.'));
+    }
+    console.log(file);
+    res.set('Content-Type', file.type);
+    res.status(200).send(Buffer.from(content, 'base64'));
+  } catch (err) {
+    console.log(err);
+    next(createError(500, err.message));
   }
-  const content = await ipfs.get(file.path);
-  if (content === undefined) {
-    return next(createError(500, 'Unable to fetch file from IPFS.'));
-  }
-  res.set('Content-Type', file.type);
-  res.status(200).send(Buffer.from(content, 'base64'));
 });
 
 async function handleIpfs(bitmap, options) {
