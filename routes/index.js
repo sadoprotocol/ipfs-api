@@ -12,7 +12,7 @@ const ipfs = require('../modules/ipfs');
 
 const upload = multer({ dest: 'uploads/' });
 const myGateway = process.env.IPFS_GATEWAY;
-const maximumFilesize = 5 ** 8; // 50 MB
+const maximumFilesize = 52_428_800; // 50 MB
 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 const acceptedMedia = [
@@ -53,19 +53,21 @@ router.post("/upload", upload.single("file"), async function (req, res, next) {
   }
 
   if (file.size > maximumFilesize) {
-    return next(createError(400, 'File size exceeded limit: ' + (maximumFilesize / 10 ** 6) + 'MB'));
+    return next(createError(400, 'File size exceeded limit: ' + maximumFilesize + 'MB. Received ' + file.size));
   }
 
   // ### Read file and upload to IPFS
 
   const tmpFilePath = path.join(__dirname, '..', file.path);
+
   try {
     const contents = await fs.readFile(tmpFilePath, { encoding: 'base64' });
-    const uploaded = await handleIpfs(contents, {
+    const bitmap = Buffer.from(contents, 'base64');
+    const uploaded = await handleIpfs(bitmap, {
       name: req.body.name ? `${req.body.name}.${file.originalname.split(".").pop()}` : file.originalname,
       size: file.size,
       type: file.mimetype,
-      pin: req.body.pin === true
+      pin: req.body.pin === "true"
     });
     res.json({
       success: true,
@@ -81,25 +83,6 @@ router.post("/upload", upload.single("file"), async function (req, res, next) {
     next(createError(500, err.message));
   } finally {
     fs.unlink(tmpFilePath); // remove temporary upload regardless of success or failure
-  }
-});
-
-router.get("/:cid", async function (req, res, next) {
-  try {
-    const file = await ipfsModel.findOne({ path: req.params.cid });
-    if (file === false) {
-      return next(createError(404, 'File not found.'));
-    }
-    const content = await ipfs.get(file.path);
-    if (content === undefined) {
-      return next(createError(500, 'Unable to fetch file from IPFS.'));
-    }
-    console.log(file);
-    res.set('Content-Type', file.type);
-    res.status(200).send(Buffer.from(content, 'base64'));
-  } catch (err) {
-    console.log(err);
-    next(createError(500, err.message));
   }
 });
 

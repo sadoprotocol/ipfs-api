@@ -1,6 +1,6 @@
 "use strict";
 
-const http = require('http');
+const https = require('https');
 const ipfs = require("ipfs-http-client");
 const ipfsConfig = {
   gateway: process.env.IPFS_GATEWAY,
@@ -9,7 +9,6 @@ const ipfsConfig = {
 };
 
 exports.create = create;
-exports.get = get;
 exports.resolve = resolve;
 exports.publish = publish;
 exports.pin = pin;
@@ -32,10 +31,6 @@ async function create(content) {
   let data = await client.add(content, { pin: false });
   data.url = ipfsConfig.gateway + '/ipfs/' + data.path;
   return data;
-}
-
-async function get(addr) {
-  return getContent(ipfsConfig.gateway + '/ipfs/' + addr)
 }
 
 async function pin(addr) {
@@ -138,7 +133,7 @@ function timeout(asyncMethod, seconds = 10, wait = false) {
 
 function getContent(url) {
   return new Promise((resolve, reject) => {
-    http.get(url, (resp) => {
+    https.get(url, (resp) => {
       let data = '';
 
       // A chunk of data has been received.
