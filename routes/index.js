@@ -16,6 +16,7 @@ const maximumFilesize = 52_428_800; // 50 MB
 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 const acceptedMedia = [
+  'application/json',
   'application/pdf',
   'text/csv',
   'text/plain',
