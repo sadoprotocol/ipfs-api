@@ -7,6 +7,7 @@ const { ObjectId } = require('mongodb');
 const collectionName = 'ipfs';
 
 exports.create = create;
+exports.update = update;
 exports.findOne = findOne;
 
 async function create(params) {

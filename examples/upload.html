@@ -4,17 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-
     <title>Upload to IPFS</title>
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
   </head>
   <body>
     <div class="container pt-4 pb-4">
-      <form action="http://ipfs-api.ordit.io/upload" enctype="multipart/form-data" method="post">
+      <form action="http://localhost:3009/upload" enctype="multipart/form-data" method="post">
         <div class="form-group">
           <label for="formFile" class="form-label">Upload something</label>
           <input type="file" class="form-control-file" name="file">
@@ -24,11 +18,27 @@
         </div>
         <input type="submit" value="Upload" class="btn btn-primary">            
       </form>
-    </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+      <hr>
+
+      <span>Pin</span>
+      <!--
+        QmNysZev73t1DW3fdVkt9DWXUeuq98kKK6SkbX8wCwbQbY is the CID
+      -->
+      <form action="http://localhost:3009/pin/QmNysZev73t1DW3fdVkt9DWXUeuq98kKK6SkbX8wCwbQbY" method="post">
+        <input type="submit" value="Pin" class="btn btn-primary">
+      </form>
+
+      <hr>
+
+      <span>Unpin</span>
+      <!--
+        QmNysZev73t1DW3fdVkt9DWXUeuq98kKK6SkbX8wCwbQbY is the CID
+      -->
+      <form action="http://localhost:3009/unpin/QmNysZev73t1DW3fdVkt9DWXUeuq98kKK6SkbX8wCwbQbY" method="post">
+        <input type="submit" value="Unpin" class="btn btn-primary">
+      </form>
+    </div>
   </body>
 </html>
 

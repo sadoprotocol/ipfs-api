@@ -1,5 +1,6 @@
 "use strict";
 
+const CID = require('cids');
 const fs = require('node:fs').promises;
 const path = require('node:path');
 const createError = require('http-errors');
@@ -104,6 +105,67 @@ async function handleIpfs(bitmap, options) {
   });
 
   return uploaded;
+}
+
+router.all("/pin/:cid", async function (req, res, next) {
+  pinOrUnpin(req.params.cid, true).then(() => {
+    res.json({
+      success: true,
+      message: 'OK'
+    });
+  }).catch(next);
+});
+
+router.all("/unpin/:cid", async function (req, res, next) {
+  pinOrUnpin(req.params.cid, false).then(() => {
+    res.json({
+      success: true,
+      message: 'OK'
+    });
+  }).catch(next);
+});
+
+async function pinOrUnpin(cid, pin) {
+  if (!cid || pin === undefined) {
+    throw new Error("Insufficient parameter received.");
+  }
+
+  if (!cid) {
+    throw new Error("Expecting CID.");
+  }
+
+  if (typeof pin !== 'boolean') {
+    throw new Error("Expecting pin to be a boolean value.");
+  }
+
+  const cidInstance = new CID(cid);
+
+  if (!CID.isCID(cidInstance)) {
+    throw new Error(`${cid} is an invalid CID.`);
+  }
+
+  if (pin === true) {
+    await ipfs.pin(cid);
+  } else {
+    await ipfs.unpin(cid);
+  }
+
+  let existInLog = await ipfsModel.findOne({ path: cid });
+
+  if (existInLog && existInLog._id) {
+    await ipfsModel.update({
+      _id: existInLog._id,
+      pin: pin
+    });
+  } else {
+    await ipfsModel.create({
+      name: '',
+      size: 0,
+      type: '',
+      path: cid,
+      pin: pin
+    });
+  }
 }
 
 module.exports = router;
